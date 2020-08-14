@@ -63,6 +63,7 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
+					"batchCount": 3,
 					"activities": [
 						{
 							"name": "DownloadListing",
