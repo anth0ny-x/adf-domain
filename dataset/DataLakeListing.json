@@ -9,6 +9,10 @@
 			"postcode": {
 				"type": "string",
 				"defaultValue": "XXXX"
+			},
+			"extract_ts": {
+				"type": "string",
+				"defaultValue": "0000"
 			}
 		},
 		"annotations": [],
@@ -17,7 +21,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@concat(convertTimeZone(utcnow(), 'UTC', 'AUS Eastern Standard Time'), '.json')",
+					"value": "@dataset().extract_ts",
 					"type": "Expression"
 				},
 				"folderPath": {

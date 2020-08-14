@@ -33,7 +33,10 @@
 							"type": "Expression"
 						},
 						"additionalHeaders": {
-							"X-API-Key": "key_dbc9e1522250d984764bfbd62626c02b",
+							"X-API-Key": {
+								"value": "@pipeline().parameters.api-key",
+								"type": "Expression"
+							},
 							"Content-Type": "application/json"
 						}
 					},
@@ -88,6 +91,9 @@
 			"postcode": {
 				"type": "string",
 				"defaultValue": "2603"
+			},
+			"api-key": {
+				"type": "string"
 			}
 		},
 		"variables": {
