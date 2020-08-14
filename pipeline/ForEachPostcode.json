@@ -1,0 +1,111 @@
+{
+	"name": "ForEachPostcode",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupPostcodes",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:01:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "PostCodeList",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "FilterState",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "LookupPostcodes",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupPostcodes').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().STATE_NAME_2016, pipeline().parameters.state)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Download Listings",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "FilterState",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('FilterState').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 3,
+					"activities": [
+						{
+							"name": "Download Listing",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "DownloadListing",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"postcode": {
+										"value": "@item().POA_CODE_2016",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"state": {
+				"type": "string",
+				"defaultValue": "Australian Capital Territory"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-08-14T05:58:02Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

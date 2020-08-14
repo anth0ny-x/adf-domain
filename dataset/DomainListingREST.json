@@ -1,0 +1,16 @@
+{
+	"name": "DomainListingREST",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "domain listing",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "residential/_search"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
