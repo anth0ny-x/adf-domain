@@ -1,10 +1,15 @@
 {
 	"name": "s987234",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "AzureBlobFS",
 		"typeProperties": {
-			"url": "https://s987234.dfs.core.windows.net"
+			"url": "https://s987234.dfs.core.windows.net",
+			"azureCloudType": "AzurePublic",
+			"tenant": "24d49892-44a9-4355-a557-10f896114b40",
+			"servicePrincipalId": "8ae17fec-d37b-448e-b803-cc9981d22b02",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkFERjk4NzIzNF9kZWUwYTRlZS04YzA1LTRlZTktYjIxYS02OWQ4ZDJhNjYyMGUiDQp9"
 		}
 	}
 }
