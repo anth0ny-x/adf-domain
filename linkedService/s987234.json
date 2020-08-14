@@ -1,0 +1,10 @@
+{
+	"name": "s987234",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://s987234.dfs.core.windows.net"
+		}
+	}
+}
