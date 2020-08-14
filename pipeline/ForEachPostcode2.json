@@ -82,27 +82,10 @@
 					"batchCount": 3,
 					"activities": [
 						{
-							"name": "Download Listing",
-							"type": "ExecutePipeline",
+							"name": "Set variable1",
+							"type": "SetVariable",
 							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"pipeline": {
-									"referenceName": "DownloadListing",
-									"type": "PipelineReference"
-								},
-								"waitOnCompletion": true,
-								"parameters": {
-									"postcode": {
-										"value": "@item().POA_CODE_2016",
-										"type": "Expression"
-									},
-									"extract_ts": {
-										"value": "convertTimeZone(utcnow(), 'UTC', 'AUS Eastern Standard Time')",
-										"type": "Expression"
-									}
-								}
-							}
+							"userProperties": []
 						}
 					]
 				}
