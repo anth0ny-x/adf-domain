@@ -1,0 +1,35 @@
+{
+	"name": "postcode_run",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "s987234",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "postcode_run.json",
+				"fileSystem": "app"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"monday": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				},
+				"tuesday": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				}
+			}
+		}
+	}
+}
