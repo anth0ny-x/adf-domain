@@ -1,5 +1,5 @@
 {
-	"name": "ForEachPostcode",
+	"name": "ForEachPostcode2",
 	"properties": {
 		"activities": [
 			{
@@ -95,10 +95,6 @@
 								"parameters": {
 									"postcode": {
 										"value": "@item().POA_CODE_2016",
-										"type": "Expression"
-									},
-									"api-key": {
-										"value": "@activity('GetFromKeyVault').output.value",
 										"type": "Expression"
 									},
 									"extract_ts": {
