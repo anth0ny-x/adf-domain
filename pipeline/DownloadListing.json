@@ -68,6 +68,10 @@
 							"postcode": {
 								"value": "@pipeline().parameters.postcode",
 								"type": "Expression"
+							},
+							"extract_ts": {
+								"value": "@pipeline().parameters.extract_ts",
+								"type": "Expression"
 							}
 						}
 					}
@@ -94,6 +98,10 @@
 			},
 			"api-key": {
 				"type": "string"
+			},
+			"extract_ts": {
+				"type": "string",
+				"defaultValue": "000000"
 			}
 		},
 		"variables": {
