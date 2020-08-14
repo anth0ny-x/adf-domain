@@ -62,6 +62,7 @@
 						"value": "@activity('LookupPostcodes').output.value[int(pipeline().parameters.state)].postcodes",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "DownloadListing",
@@ -77,6 +78,10 @@
 								"parameters": {
 									"postcode": {
 										"value": "@item()",
+										"type": "Expression"
+									},
+									"apikey": {
+										"value": "@activity('GetFromKeyVault').output.value",
 										"type": "Expression"
 									},
 									"extract_ts": {
