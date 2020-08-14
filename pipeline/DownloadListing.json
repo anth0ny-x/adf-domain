@@ -34,7 +34,7 @@
 						},
 						"additionalHeaders": {
 							"X-API-Key": {
-								"value": "@pipeline().parameters.api-key",
+								"value": "@pipeline().parameters.apikey",
 								"type": "Expression"
 							},
 							"Content-Type": "application/json"
@@ -96,7 +96,7 @@
 				"type": "string",
 				"defaultValue": "2603"
 			},
-			"api-key": {
+			"apikey": {
 				"type": "string"
 			},
 			"extract_ts": {

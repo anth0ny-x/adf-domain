@@ -79,10 +79,6 @@
 										"value": "@item()",
 										"type": "Expression"
 									},
-									"api-key": {
-										"value": "@activity('GetFromKeyVault').output.value",
-										"type": "Expression"
-									},
 									"extract_ts": {
 										"value": "@variables('extract_ts')",
 										"type": "Expression"
