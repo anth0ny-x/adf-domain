@@ -13,6 +13,10 @@
 			"extract_ts": {
 				"type": "string",
 				"defaultValue": "0000"
+			},
+			"page": {
+				"type": "string",
+				"defaultValue": "0"
 			}
 		},
 		"annotations": [],
@@ -21,7 +25,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@concat(dataset().extract_ts, '.json')",
+					"value": "@concat(dataset().extract_ts, '_', dataset().page, '.json')",
 					"type": "Expression"
 				},
 				"folderPath": {
