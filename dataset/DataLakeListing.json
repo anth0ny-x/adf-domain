@@ -2,7 +2,7 @@
 	"name": "DataLakeListing",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureDataLakeStorage1",
+			"referenceName": "s987234",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {

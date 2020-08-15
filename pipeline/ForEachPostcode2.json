@@ -50,7 +50,7 @@
 						]
 					},
 					{
-						"activity": "Set variable1",
+						"activity": "Set extract_ts",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -117,7 +117,7 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set extract_ts",
 				"type": "SetVariable",
 				"dependsOn": [],
 				"userProperties": [],
