@@ -25,7 +25,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@concat(dataset().extract_ts, '_', dataset().page,'_',pipeline().RunId, '.json')",
+					"value": "@concat(dataset().extract_ts, '_', dataset().page,'_',string(rand(0,10000000)), '.json')",
 					"type": "Expression"
 				},
 				"folderPath": {
