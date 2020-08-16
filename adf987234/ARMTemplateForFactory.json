@@ -1,0 +1,646 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf987234"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
+		"s987234_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 's987234'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://s987.dfs.core.windows.net"
+		},
+		"domain listing_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.domain.com.au/v1/listings/"
+		},
+		"s987234_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://s987234.dfs.core.windows.net"
+		},
+		"s987234_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "24d49892-44a9-4355-a557-10f896114b40"
+		},
+		"s987234_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "8ae17fec-d37b-448e-b803-cc9981d22b02"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DownloadListing')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Download Listing From Domain",
+				"activities": [
+					{
+						"name": "rest_payload",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "payload",
+							"value": {
+								"value": "@replace(variables('payloadTemplate'), '$$POSTCODE$$', pipeline().parameters.postcode)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Until Pagination Ends",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "rest_payload",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@less(int(variables('count')), 200)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "DomainToDataLake2",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:00:30",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "POST",
+											"requestBody": {
+												"value": "@{replace(variables('payload'), '$$PAGE$$', string(length(variables('page'))))}\n",
+												"type": "Expression"
+											},
+											"additionalHeaders": {
+												"X-API-Key": {
+													"value": "@pipeline().parameters.apikey",
+													"type": "Expression"
+												},
+												"Content-Type": "application/json"
+											}
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings",
+												"quoteAllText": true,
+												"filePattern": "setOfObjects"
+											}
+										},
+										"enableStaging": false,
+										"validateDataConsistency": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DomainListingREST",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DataLakeListing",
+											"type": "DatasetReference",
+											"parameters": {
+												"postcode": {
+													"value": "@pipeline().parameters.postcode",
+													"type": "Expression"
+												},
+												"extract_ts": {
+													"value": "@pipeline().parameters.extract_ts",
+													"type": "Expression"
+												},
+												"page": {
+													"value": "@length(variables('page'))",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "update count",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "DomainToDataLake2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "count",
+										"value": {
+											"value": "@string(activity('DomainToDataLake2').output.rowsRead)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Update page",
+									"type": "AppendVariable",
+									"dependsOn": [
+										{
+											"activity": "DomainToDataLake2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "page",
+										"value": "1"
+									}
+								}
+							],
+							"timeout": "0.00:05:00"
+						}
+					}
+				],
+				"parameters": {
+					"postcode": {
+						"type": "string",
+						"defaultValue": "2000"
+					},
+					"apikey": {
+						"type": "string",
+						"defaultValue": "key_dbc9e1522250d984764bfbd62626c02b"
+					},
+					"extract_ts": {
+						"type": "string",
+						"defaultValue": "000000"
+					}
+				},
+				"variables": {
+					"payloadTemplate": {
+						"type": "String",
+						"defaultValue": "{\"listingType\":\"Sale\",\"locations\":[{\"state\":\"\",\"region\":\"\",\"area\":\"\",\"suburb\":\"\",\"postCode\":$$POSTCODE$$,\"includeSurroundingSuburbs\":false}],\"customSort\":{\"elements\":[{\"field\":\"AdId\",\"direction\":\"Descending\"}]},\"pageNumber\":$$PAGE$$,\"pageSize\":200}"
+					},
+					"payload": {
+						"type": "String"
+					},
+					"count": {
+						"type": "String",
+						"defaultValue": "200"
+					},
+					"page": {
+						"type": "Array",
+						"defaultValue": []
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-08-14T05:53:03Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DomainListingREST')]",
+				"[concat(variables('factoryId'), '/datasets/DataLakeListing')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ForEachPostcode2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupPostcodes",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:01:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "postcode_run",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "LookupPostcodes",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "GetFromKeyVault",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set extract_ts",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('LookupPostcodes').output.value[int(pipeline().parameters.state)].postcodes",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"batchCount": 6,
+							"activities": [
+								{
+									"name": "DownloadListing",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "DownloadListing",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"postcode": {
+												"value": "@item()",
+												"type": "Expression"
+											},
+											"apikey": {
+												"value": "@activity('GetFromKeyVault').output.value",
+												"type": "Expression"
+											},
+											"extract_ts": {
+												"value": "@variables('extract_ts')",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "GetFromKeyVault",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://keyvault987234.vault.azure.net/secrets/DOMAIN-API-KEY1/9294c51d962c45638bb710562c640760?api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "Set extract_ts",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "extract_ts",
+							"value": {
+								"value": "@convertTimeZone(utcnow(), 'UTC', 'AUS Eastern Standard Time')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"state": {
+						"type": "string",
+						"defaultValue": "1"
+					}
+				},
+				"variables": {
+					"extract_ts": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-08-14T05:58:02Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/postcode_run')]",
+				"[concat(variables('factoryId'), '/pipelines/DownloadListing')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "GetFromKeyVault",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://keyvault987234.vault.azure.net/secrets/DOMAIN-API-KEY1/9294c51d962c45638bb710562c640760?api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "api_key",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "GetFromKeyVault",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "api_key",
+							"value": {
+								"value": "@activity('GetFromKeyVault').output.value",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"variables": {
+					"api_key": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataLakeListing')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "s987234",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"postcode": {
+						"type": "string",
+						"defaultValue": "XXXX"
+					},
+					"extract_ts": {
+						"type": "string",
+						"defaultValue": "0000"
+					},
+					"page": {
+						"type": "string",
+						"defaultValue": "0"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().extract_ts, '_', dataset().page, '.json')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat('postcode=',dataset().postcode)",
+							"type": "Expression"
+						},
+						"fileSystem": "listing"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/s987234')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DomainListingREST')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "domain listing",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "residential/_search"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/domain listing')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PostCodeList')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "POA_LARGEST_SSC_2016.csv",
+						"fileSystem": "metadata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "POA_CODE_2016",
+						"type": "String"
+					},
+					{
+						"name": "SSC_NAME_2016",
+						"type": "String"
+					},
+					{
+						"name": "STATE_NAME_2016",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/postcode_run')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "s987234",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "postcode_run.json",
+						"fileSystem": "app"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"monday": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"tuesday": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/s987234')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/domain listing')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('domain listing_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/s987234')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('s987234_properties_typeProperties_url')]",
+					"azureCloudType": "AzurePublic",
+					"tenant": "[parameters('s987234_properties_typeProperties_tenant')]",
+					"servicePrincipalId": "[parameters('s987234_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('s987234_servicePrincipalKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

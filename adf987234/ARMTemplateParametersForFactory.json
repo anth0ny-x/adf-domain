@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf987234"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
+		"s987234_servicePrincipalKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://s987.dfs.core.windows.net"
+		},
+		"domain listing_properties_typeProperties_url": {
+			"value": "https://api.domain.com.au/v1/listings/"
+		},
+		"s987234_properties_typeProperties_url": {
+			"value": "https://s987234.dfs.core.windows.net"
+		},
+		"s987234_properties_typeProperties_tenant": {
+			"value": "24d49892-44a9-4355-a557-10f896114b40"
+		},
+		"s987234_properties_typeProperties_servicePrincipalId": {
+			"value": "8ae17fec-d37b-448e-b803-cc9981d22b02"
+		}
+	}
+}
