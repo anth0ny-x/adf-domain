@@ -66,7 +66,7 @@
 						]
 					},
 					{
-						"activity": "api_key",
+						"activity": "apikey",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -133,7 +133,7 @@
 				}
 			},
 			{
-				"name": "api_key",
+				"name": "apikey",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
