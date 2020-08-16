@@ -66,7 +66,7 @@
 						]
 					},
 					{
-						"activity": "apikey",
+						"activity": "GetFromKeyVault",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -97,7 +97,7 @@
 										"value": "@item().POA_CODE_2016",
 										"type": "Expression"
 									},
-									"api-key": {
+									"apikey": {
 										"value": "@activity('GetFromKeyVault').output.value",
 										"type": "Expression"
 									},
@@ -131,32 +131,17 @@
 						"resource": "https://vault.azure.net"
 					}
 				}
-			},
-			{
-				"name": "apikey",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "GetFromKeyVault",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "api_key",
-					"value": {
-						"value": "@activity('GetFromKeyVault').output.value",
-						"type": "Expression"
-					}
-				}
 			}
 		],
 		"parameters": {
 			"state": {
 				"type": "string",
 				"defaultValue": "Australian Capital Territory"
+			}
+		},
+		"variables": {
+			"apikey": {
+				"type": "String"
 			}
 		},
 		"annotations": [],
