@@ -34,6 +34,198 @@
 				},
 				"fileSystem": "listing"
 			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string"
+				},
+				"listing": {
+					"type": "object",
+					"properties": {
+						"listingType": {
+							"type": "string"
+						},
+						"id": {
+							"type": "integer"
+						},
+						"advertiser": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string"
+								},
+								"id": {
+									"type": "integer"
+								},
+								"name": {
+									"type": "string"
+								},
+								"logoUrl": {
+									"type": "string"
+								},
+								"preferredColourHex": {
+									"type": "string"
+								},
+								"bannerUrl": {
+									"type": "string"
+								},
+								"contacts": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"name": {
+												"type": "string"
+											},
+											"photoUrl": {
+												"type": "string"
+											}
+										}
+									}
+								}
+							}
+						},
+						"priceDetails": {
+							"type": "object",
+							"properties": {
+								"displayPrice": {
+									"type": "string"
+								}
+							}
+						},
+						"media": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"category": {
+										"type": "string"
+									},
+									"url": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"propertyDetails": {
+							"type": "object",
+							"properties": {
+								"state": {
+									"type": "string"
+								},
+								"features": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"propertyType": {
+									"type": "string"
+								},
+								"allPropertyTypes": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"bathrooms": {
+									"type": "number"
+								},
+								"bedrooms": {
+									"type": "number"
+								},
+								"carspaces": {
+									"type": "integer"
+								},
+								"unitNumber": {
+									"type": "string"
+								},
+								"streetNumber": {
+									"type": "string"
+								},
+								"street": {
+									"type": "string"
+								},
+								"area": {
+									"type": "string"
+								},
+								"region": {
+									"type": "string"
+								},
+								"suburb": {
+									"type": "string"
+								},
+								"postcode": {
+									"type": "string"
+								},
+								"displayableAddress": {
+									"type": "string"
+								},
+								"latitude": {
+									"type": "number"
+								},
+								"longitude": {
+									"type": "number"
+								},
+								"buildingArea": {
+									"type": "number"
+								},
+								"landArea": {
+									"type": "number"
+								}
+							}
+						},
+						"headline": {
+							"type": "string"
+						},
+						"summaryDescription": {
+							"type": "string"
+						},
+						"hasFloorplan": {
+							"type": "boolean"
+						},
+						"hasVideo": {
+							"type": "boolean"
+						},
+						"labels": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"inspectionSchedule": {
+							"type": "object",
+							"properties": {
+								"byAppointment": {
+									"type": "boolean"
+								},
+								"recurring": {
+									"type": "boolean"
+								},
+								"times": {
+									"type": "array"
+								}
+							}
+						},
+						"listingSlug": {
+							"type": "string"
+						},
+						"auctionSchedule": {
+							"type": "object",
+							"properties": {
+								"time": {
+									"type": "string"
+								},
+								"auctionLocation": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
