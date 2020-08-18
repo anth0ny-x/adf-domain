@@ -1,0 +1,24 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DataLakeListing",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "Select1"
+				}
+			],
+			"script": "source(output(\n\t\ttype as string,\n\t\tlisting as (listingType as string, id as string, advertiser as (type as string, id as string, name as string, logoUrl as string, preferredColourHex as string, bannerUrl as string, contacts as (name as string, photoUrl as string)[]), priceDetails as (displayPrice as string), media as (category as string, url as string)[], propertyDetails as (state as string, features as string[], propertyType as string, allPropertyTypes as string[], bathrooms as double, bedrooms as double, carspaces as string, unitNumber as string, streetNumber as string, street as string, area as string, region as string, suburb as string, postcode as string, displayableAddress as string, latitude as double, longitude as double, buildingArea as double, landArea as double), headline as string, summaryDescription as string, hasFloorplan as boolean, hasVideo as boolean, labels as string[], inspectionSchedule as (byAppointment as boolean, recurring as boolean, times as string[]), listingSlug as string, auctionSchedule as (time as string, auctionLocation as string))\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> source1\nsource1 select(mapColumn(\n\t\ttype,\n\t\tid = listing.id,\n\t\tlistingSlug = listing.listingSlug,\n\t\tprice = listing.priceDetails.displayPrice\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1"
+		}
+	}
+}
