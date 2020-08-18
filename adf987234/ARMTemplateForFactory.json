@@ -74,7 +74,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@less(int(variables('count')), 200)",
+								"value": "@or(greater(length(variables('page')), 5), less(last(variables('page')), 200))",
 								"type": "Expression"
 							},
 							"activities": [
@@ -151,26 +151,6 @@
 									]
 								},
 								{
-									"name": "update count",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "DomainToDataLake2",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "count",
-										"value": {
-											"value": "@string(activity('DomainToDataLake2').output.rowsRead)",
-											"type": "Expression"
-										}
-									}
-								},
-								{
 									"name": "Update page",
 									"type": "AppendVariable",
 									"dependsOn": [
@@ -184,11 +164,11 @@
 									"userProperties": [],
 									"typeProperties": {
 										"variableName": "page",
-										"value": "1"
+										"value": "activity('DomainToDataLake2').output.rowsRead"
 									}
 								}
 							],
-							"timeout": "0.00:05:00"
+							"timeout": "0.00:02:00"
 						}
 					}
 				],
